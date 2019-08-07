@@ -7,15 +7,15 @@
     let res = await fetch('http://localhost:3000/items', { mode: 'cors' })
     data = await res.json();
   })
+  let meme = 10;
 </script>
 
 <ItemAdd />
 {#each data as item}
-<ItemCard>
-<span slot="itemName"> item.name </span>
-<span slot="itemNotes"> item.notes </span>
-<span slot="itemPriority"> item.prirority </span>
-<span slot="itemLabel"> item.label </span>
+<ItemCard itemId={item.itemid}>
+<span slot="itemName"> {item.name} </span>
+<span slot="itemNotes"> {item.notes} </span>
+<span slot="itemPriority"> {item.prirority} </span>
+<span slot="itemLabel"> {item.label} </span>
 </ItemCard>
 {/each}
-

@@ -18,31 +18,40 @@ async function initDb () {
     CREATE TABLE IF NOT EXISTS items (
       itemId SERIAL PRIMARY KEY,
       name  VARCHAR,
+      done VARCHAR,
       notes VARCHAR,
       priority VARCHAR,
       label VARCHAR
     );
     `)
   await client.end()
-  console.log(res)
 }
 
 async function insertItem (item) {
   const client = new Client()
   await client.connect()
   const name = item.name || 'null'
+  const done = item.done || 'false'
   const notes = item.notes || 'null'
   const priority = item.priority || 'Low'
   const label = item.label || 'null'
-  const res = await client.query(`INSERT INTO items(name, notes, priority, label) VALUES($1, $2, $3, $4) RETURNING itemId;`, [name, notes, priority, label])
+  const res = await client.query(`INSERT INTO items(name, done, notes, priority, label) VALUES($1, $2, $3, $4, $5) RETURNING itemId;`, [name, done, notes, priority, label])
   await client.end()
-  console.log(res)
+  return res.rows[0].itemid
 }
 
 async function fetchItems (itemId) {
   const client = new Client()
   await client.connect()
   const res = await client.query(`SELECT * FROM items`)
+  await client.end()
+  return res.rows
+}
+
+async function fetchDoneItems () {
+  const client = new Client()
+  await client.connect()
+  const res = await client.query(`SELECT * FROM items where done = 'true'`)
   await client.end()
   return res.rows
 }
@@ -56,6 +65,7 @@ async function deleteItem (itemId) {
 
 const itemD = {
   name: 'item 1',
+  done: 'true',
   notes: 'item 1 notes',
   priority: 'item 1 priority',
   label: 'item 1 label'

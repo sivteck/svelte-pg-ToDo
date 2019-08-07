@@ -1,5 +1,12 @@
 <script>
-  
+  export let itemId;
+  async function deleteItem(e) {
+    let deleteItemId = e.target.getAttribute('itemid')
+    let res = await fetch('http://localhost:3000/delete/' + deleteItemId)
+    if (res.status === 200) {
+      document.getElementById(deleteItemId).remove()
+    }
+  }
 </script>
 
 <style>
@@ -24,7 +31,8 @@
     }
 </style>
 
-<div class="itemC">
+<div class="itemC" id={itemId}>
+  <slot name="itemId"> </slot>
   <div class="itemHead">
     <input class="status" type="checkbox">
   </div>
@@ -46,6 +54,6 @@
     </div>
     <p> Priority: <slot name="itemPriority">itemPriority</slot> </p>
     <p> Label: <slot name="itemLabel">itemLabel</slot> </p>
-    <button type="button"> Delete Item</button>
+    <button type="button" itemid={itemId} on:click={deleteItem}> Delete Item</button>
   </div>
 </div>
