@@ -3,19 +3,28 @@
   import ItemAdd from './ItemAdd.svelte';
   import ItemCard from './ItemCard.svelte';
   let data = [];
+
+  function addNewItem(event) {
+      console.log(event.detail)
+      data = [event.detail, ...data]
+      console.log(data)
+      const itemCard = new ItemCard({
+	      target: document.body,
+	      props: event.detail
+      })
+  }
+
   onMount(async function getItems() {
     let res = await fetch('http://localhost:3000/items', { mode: 'cors' })
     data = await res.json();
+    data = data.sort(function (i1, i2) {
+      if ((i1.itemid * 1) < (i2.itemid * 1)) return 1
+      return -1
+    })
   })
-  let meme = 10;
 </script>
 
-<ItemAdd />
+<ItemAdd on:message={addNewItem}/>
 {#each data as item}
-<ItemCard itemId={item.itemid}>
-<span slot="itemName"> {item.name} </span>
-<span slot="itemNotes"> {item.notes} </span>
-<span slot="itemPriority"> {item.prirority} </span>
-<span slot="itemLabel"> {item.label} </span>
-</ItemCard>
+<ItemCard {...item}/>
 {/each}
