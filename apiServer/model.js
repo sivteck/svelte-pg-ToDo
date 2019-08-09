@@ -40,6 +40,15 @@ async function insertItem (item) {
   return res.rows[0].itemid
 }
 
+async function updateField (itemid, fieldName, updatedValue) {
+  const client = new Client()
+  await client.connect()
+  const sql = String.raw`UPDATE items SET ${fieldName} = $1 where itemid = $2`
+  const res = await client.query(sql, [updatedValue, itemid])
+  await client.end()
+  return 1;
+}
+
 async function fetchItems (itemId) {
   const client = new Client()
   await client.connect()
@@ -79,5 +88,6 @@ const itemD = {
 exports.deleteItem = deleteItem
 exports.insertItem = insertItem
 exports.fetchItems = fetchItems
+exports.updateField = updateField
 
 // queryEcho()

@@ -4,6 +4,7 @@ const model = require('./model.js')
 const deleteItem = model.deleteItem
 const insertItem = model.insertItem
 const fetchItems = model.fetchItems
+const updateField = model.updateField
 
 const app = express()
 const port = 3000
@@ -34,11 +35,19 @@ app.get('/delete/:id', async function (req, res) {
 app.post('/insert', async function (req, res) {
   let itemId = await insertItem(req.body)
   console.log('hittting /insert')
-  console.log(req.body)
   console.log(itemId)
   console.log(req.method)
   let itemIdObj = { 'itemid': itemId }
   res.send(itemIdObj)
+})
+
+app.post('/update', async function (req, res) {
+  console.log(req.body)
+  let itemId = req.body.itemid
+  let fieldName = req.body.fieldName
+  let updatedValue = req.body.updatedValue
+  let succ = await updateField(itemId, fieldName, updatedValue)
+  return succ
 })
 
 app.listen(port, () => console.log('listening on port 3000'))

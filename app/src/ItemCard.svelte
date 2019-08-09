@@ -6,17 +6,43 @@
   export let label = "default label";
   export let priority = "default property";
 
+  let toggleNoteEdit = false
+  let toggleNameEdit = false
+
   async function deleteItem(e) {
     let deleteItemId = e.target.getAttribute('itemid')
+    console.log('deeeeeleeeteITEM')
     let res = await fetch('http://localhost:3000/delete/' + deleteItemId)
     if (res.status === 200) {
       document.getElementById(deleteItemId).remove()
     }
   }
-</script>
+  
+  function toggleNoteEditFun (e) {
+      toggleNoteEdit = !toggleNoteEdit
+  }
 
+  function toggleNameEditFun (e) {
+      toggleNameEdit = !toggleNameEdit
+  }
+
+  async function updateNotes (e) {
+    console.log(e)
+    if (e.keyCode === 13) {
+      notes = e.target.value
+      console.log(itemid)
+      toggleNoteEdit = !toggleNoteEdit
+      let reqBody =  { itemid: itemid, fieldName: 'notes', updatedValue: notes }
+      let headers = { 'Accept': 'application/json', 'Content-Type': 'application/json' }
+      let req = { headers: headers, method: 'POST', body: JSON.stringify(reqBody) }
+      console.log(reqBody)
+      let res = await fetch('http://localhost:3000/update', req)
+    }
+  }
+
+</script> 
 <style>
-    label#lToggle::after {
+    label.lToggle::after {
         font-size: 15px;
         content: '+ Notes';
     }
@@ -44,11 +70,11 @@
         text-align: left;
     }
 
-    input#statusCheckBox {
+    /* input.statusCheckBox {
         display: none;
-    }
+    } */
 
-    #statusCheckBoxLabel::before {
+    .statusCheckBoxLabel::before {
         font-size: 25px;
         content: '✓';
         color: transparent;
@@ -63,17 +89,17 @@
         color: #e0d8d7;
     }
 
-    #statusCheckBox:checked ~ #statusCheckBoxLabel::before {
+    .statusCheckBox:checked ~ .statusCheckBoxLabel::before {
         content: '✓';
         color: green;
     }
 
-   #nameEditButton {
+   .nameEditButton {
         color: teal;
         float: right;
    }
 
-   #deleteItemButton {
+   .deleteItemButton {
         text-align: right;
         color: red;
         float: right;
@@ -90,11 +116,11 @@
         content: '✎ ';
     }
 
-    input#toggle {
-        display: none;
+    input.toggle {
+        /* display: none; */
     }
 
-    #expand {
+    .expand {
         height: 0px;
         overflow: auto;
     }
@@ -116,14 +142,14 @@
         color: #000;
     }
 
-    #toggle:checked ~ #expand {
+    .toggle:checked ~ .expand {
       height: auto;
     }
 
-    #lToggle {
+    .lToggle {
     }
 
-    #toggle:checked ~ #lToggle::after {
+    .toggle:checked ~ .lToggle::after {
         content: '- Notes';
     }
 
@@ -160,21 +186,26 @@
 
 <div class="itemC" id="{itemid}">
   <div class="itemHead">
-    <div class="grid-item">
-    </div>
-    <input id="statusCheckBox" class="status grid-item" type="checkbox" done="{done}">
-    <label id="statusCheckBoxLabel" for="statusCheckBox"></label>
+    <input class="status grid-item statusCheckBox" type="checkbox" done="{done}">
+    <label class="statusCheckBoxLabel" for="statusCheckBox"></label>
     <div class="name grid-item">
       <p class="itemNameHeader grid-item" >{name} </p>
     </div>
-    <button class="grid-item" type="button" id="deleteItemButton">X</button>
-    <button id="nameEditButton" class="grid-item" type="submit">✎</button>
+    <button itemid="{itemid}" class="grid-item deleteItemButton" type="button" on:click={deleteItem}>X</button>
+    <button on:click={toggleNameEditFun} class="grid-item nameEditButton" type="submit">✎</button>
   </div>
-  <input id="toggle" type="checkbox">
-  <label id="lToggle" for="toggle">  </label>
-  <div id="expand">
+  <input class="toggle" type="checkbox">
+  <label class="lToggle" for="toggle">  </label>
+  <div class="expand">
     <div class="itemNotes">
-      <div class="notes"> <p class="item-notes"> {notes} </p> </div>
+      <div on:click={toggleNoteEditFun} itemid="{itemid}" class="notes" > 
+      {#if !toggleNoteEdit}
+      <p  class="item-notes"> {notes} </p>
+      {/if}
+      {#if toggleNoteEdit}
+      <textarea autofocus on:keyup={updateNotes} type="text" id="editNotes">{notes}</textarea>
+      {/if}
+      </div>
     </div>
   </div>
 </div>
