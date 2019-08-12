@@ -189,7 +189,12 @@
     <input class="status grid-item statusCheckBox" type="checkbox" done="{done}">
     <label class="statusCheckBoxLabel" for="statusCheckBox"></label>
     <div class="name grid-item">
+    {#if !toggleNameEdit}
       <p class="itemNameHeader grid-item" >{name} </p>
+    {/if}
+    {#if toggleNameEdit}
+      <input id="editName" value="${this.getAttribute('itemName')}">
+    {/if}
     </div>
     <button itemid="{itemid}" class="grid-item deleteItemButton" type="button" on:click={deleteItem}>X</button>
     <button on:click={toggleNameEditFun} class="grid-item nameEditButton" type="submit">✎</button>
